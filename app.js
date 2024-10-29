@@ -2,15 +2,21 @@ const express = require("express");
 const fs = require("fs/promises");
 const moment = require("moment");
 const cors = require("cors");
-const books = require("./books");
+const logger = require("morgan");
+
+const booksRouter = require("./routes/api/books");
 
 // web server
 const app = express();
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
+
+app.use(logger(formatsLogger)); // for terminal
 
 // cors middleware
 app.use(cors()); // allow cross domain request
+app.use(express.json()) 
 
-// logs middleware 
+// logs middleware
 app.use(async (req, res, next) => {
   const { method, url } = req;
   const date = moment().format("YYYY-MM-DD_hh:mm:ss");
@@ -18,13 +24,7 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.get("/books", (req, res) => {
-  res.json(books);
-});
-
-app.get("/products", (req, res) => {
-  res.json([]);
-});
+app.use("/api/books", booksRouter);
 
 // error route middleware
 app.use((req, res) => {
@@ -33,4 +33,13 @@ app.use((req, res) => {
   });
 });
 
-app.listen(3001);
+app.use((err, req, res, next) => {
+  const { status = 500, message = "Not found" } = err;
+  res.status(status).json({
+    message,
+  });
+});
+
+app.listen(3001, () => {
+  console.log("Server running! Use API on port: 3001");
+});
