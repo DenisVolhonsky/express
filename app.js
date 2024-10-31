@@ -3,6 +3,7 @@ const fs = require("fs/promises");
 const moment = require("moment");
 const cors = require("cors");
 const logger = require("morgan");
+require("dotenv").config();
 
 const booksRouter = require("./routes/api/books");
 
@@ -14,7 +15,7 @@ app.use(logger(formatsLogger)); // for terminal
 
 // cors middleware
 app.use(cors()); // allow cross domain request
-app.use(express.json()) 
+app.use(express.json());
 
 // logs middleware
 app.use(async (req, res, next) => {
@@ -40,6 +41,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(3001, () => {
-  console.log("Server running! Use API on port: 3001");
-});
+module.exports = app;

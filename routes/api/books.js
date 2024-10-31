@@ -1,83 +1,32 @@
 const express = require("express");
-const books = require("../../models/books/");
-const { HttpError } = require("../../helpers");
-const Joi = require("joi"); // schema
+const ctrl = require("../../controllers/books");
+const { ctrlWrapper } = require("../../helpers");
+const { validateBody, isValidId } = require("../../middlewares");
+const { schemas } = require("../../models/book");
 
 const router = express.Router();
 
-const addSchema = Joi.object({
-  title: Joi.string().required(),
-  author: Joi.string().required(),
-});
+router.get("/", ctrlWrapper(ctrl.getAll));
 
-router.get("/", async (req, res, next) => {
-  try {
-    const result = await books.getAll();
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/:id", isValidId, ctrlWrapper(ctrl.getById));
 
-router.get("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const result = await books.getById(id);
+router.post("/", validateBody(schemas.addSchema), ctrlWrapper(ctrl.addBook)); //validateBody(schemas.addSchema),
 
-    if (!result) {
-      return next(HttpError(404, "Not found"));
-    }
+router.put(
+  "/:id",
+  isValidId,
+  validateBody(schemas.addSchema),
+  ctrlWrapper(ctrl.updateById)
+);
+//validateBody(schemas.addSchema),
 
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.patch(
+    "/:id/favourite",
+    isValidId,
+    validateBody(schemas.updateFavouriteSchema),
+    ctrlWrapper(ctrl.updateFavourite)
+  );
 
-router.post("/", async (req, res, next) => {
-  try {
-    const { error } = addSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const result = await books.addBook(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.put("/:id", async (req, res, next) => {
-  try {
-    const { error } = addSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { id } = req.params;
-    const result = await books.updateById(id, req.body);
-
-    if (!result) {
-      throw HttpError(404, error.message);
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.delete("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const result = await books.deleteById(id);
-    if (!result) {
-      throw HttpError(404, "Not found");
-    }
-    res.json({
-      message: "Delete success",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+router.delete("/:id", isValidId, ctrlWrapper(ctrl.deleteById));
 
 module.exports = router;
