@@ -21,11 +21,11 @@ router.put(
 //validateBody(schemas.addSchema),
 
 router.patch(
-    "/:id/favourite",
-    isValidId,
-    validateBody(schemas.updateFavouriteSchema),
-    ctrlWrapper(ctrl.updateFavourite)
-  );
+  "/:id/favourite",
+  isValidId,
+  validateBody(schemas.updateFavouriteSchema),
+  ctrlWrapper(ctrl.updateFavourite)
+);
 
 router.delete("/:id", isValidId, ctrlWrapper(ctrl.deleteById));
 

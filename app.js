@@ -5,6 +5,7 @@ const cors = require("cors");
 const logger = require("morgan");
 require("dotenv").config();
 
+const authRouter = require("./routes/api/auth");
 const booksRouter = require("./routes/api/books");
 
 // web server
@@ -25,6 +26,7 @@ app.use(async (req, res, next) => {
   next();
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/books", booksRouter);
 
 // error route middleware
