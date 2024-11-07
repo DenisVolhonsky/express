@@ -25,13 +25,18 @@ const bookSchema = new Schema(
       enum: gernes,
       required: true,
     },
-    isbn: {
-      // ISBN -> 123-456-7-89012-3
-      type: String,
-      match: isbnRegExp,
-      unique: true, // TODO add unique field in DB
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
       required: true,
     },
+    // isbn: {
+    //   // ISBN -> 123-456-7-89012-3
+    //   type: String,
+    //   match: isbnRegExp,
+    //   unique: true, // TODO add unique field in DB
+    //   required: true,
+    // },
   },
   { versionKey: false, timestamps: true }
 );
@@ -43,7 +48,7 @@ const addSchema = Joi.object({
   gerne: Joi.string()
     .valid(...gernes)
     .required(),
-  isbn: Joi.string().pattern(isbnRegExp).required(),
+  // isbn: Joi.string().pattern(isbnRegExp).required(),
 });
 
 const updateFavouriteSchema = Joi.object({
