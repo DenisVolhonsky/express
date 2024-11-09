@@ -17,12 +17,13 @@ app.use(logger(formatsLogger)); // for terminal
 // cors middleware
 app.use(cors()); // allow cross domain request
 app.use(express.json());
+app.use(express.static("public"));
 
 // logs middleware
 app.use(async (req, res, next) => {
   const { method, url } = req;
   const date = moment().format("YYYY-MM-DD_hh:mm:ss");
-  await fs.appendFile("./public/server.log", `\n${method} ${url} ${date}`);
+  await fs.appendFile("./server.log", `\n${method} ${url} ${date}`);
   next();
 });
 
